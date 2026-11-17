@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mehmet Bağdınlı · CREST CSS application</title>
+<meta name="description" content="Computational social scientist in Istanbul. Application page for CREST CSS, PhD entry autumn 2027.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23ffcf3a'/%3E%3Ctext x='32' y='47' text-anchor='middle' font-family='Impact,sans-serif' font-size='40'%3EMB%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Unbounded:wght@300..800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --ink:#000; --chalk:#e9e7e2; --signal:#ffcf3a; --grit:#4b4a47; --mute:#8f8d88; --panel:#141414;
+  --display:Anton,Impact,'Arial Narrow',sans-serif;
+  --body:Unbounded,'Arial Black','Helvetica Neue',sans-serif;
+}
+*{box-sizing:border-box}
+html{background:var(--ink);color-scheme:dark;scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--chalk);font-family:var(--body);font-weight:300;font-size:15px;line-height:1.75;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+a:hover{color:var(--signal)}
+p,h1,h2,h3,h4,figure,ul{margin:0}
+ul{padding:0;list-style:none}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* header */
+header{position:sticky;top:0;z-index:20;background:var(--ink);border-bottom:1px solid var(--chalk)}
+header .wrap{display:flex;align-items:center;gap:clamp(12px,3vw,24px);min-height:64px}
+.mark{flex:none;display:grid;place-items:center;width:40px;height:40px;background:var(--signal);color:#000;font:20px var(--display);text-decoration:none}
+.mark:hover{color:#000;background:var(--chalk)}
+nav{display:flex;flex-wrap:wrap;gap:2px clamp(12px,2.5vw,22px)}
+nav a{font-size:13px;font-weight:500;text-decoration:none;padding:4px 0;border-bottom:2px solid transparent}
+nav a:hover{border-bottom-color:var(--signal);color:var(--chalk)}
+#clock{margin-left:auto;font-size:12px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:28vw}
+
+/* shared bits */
+main{padding-top:28px}
+.display{font-family:var(--display);font-weight:400;text-transform:uppercase;line-height:.86;font-size:clamp(3.2rem,8.5vw,7.4rem)}
+.display span{display:block}
+.display .y{color:var(--signal)}
+.display .o{color:transparent;-webkit-text-stroke:2px var(--chalk)}
+.chip{display:inline-block;background:var(--signal);color:#000;font-size:11px;font-weight:700;line-height:1;padding:6px 8px;white-space:nowrap}
+.muted{color:var(--mute)}
+.sig{color:var(--signal);font-weight:500}
+section{scroll-margin-top:64px}
+.block{padding-top:clamp(64px,9vw,120px)}
+.btn{border:1px solid var(--chalk);background:transparent;padding:10px 16px;font-size:13px;font-weight:500;cursor:pointer}
+.btn:hover{background:var(--chalk);color:#000}
+.btn.primary{border-color:var(--signal);background:var(--signal);color:#000}
+.btn.primary:hover{background:var(--chalk);border-color:var(--chalk)}
+
+/* hero */
+.hero{display:flex;flex-wrap:wrap;gap:16px}
+.hero-left{flex:1 1 520px;min-width:0;display:flex;flex-direction:column;justify-content:flex-start;gap:16px}
+.name{display:flex;flex-wrap:wrap;align-items:flex-end;gap:0 .22em;font-family:var(--display);font-weight:400;text-transform:lowercase;line-height:.86;user-select:none}
+.name .part{display:block;font-size:clamp(2.6rem,7.5vw,7.4rem);white-space:nowrap}
+.name .first{color:var(--signal)}
+.name .last{color:transparent;-webkit-text-stroke:2.5px var(--chalk)}
+.name .ch{display:inline-block;transform-origin:50% 100%;animation:rise 1s cubic-bezier(.2,.9,.25,1) both;transition:transform .22s cubic-bezier(.2,.9,.25,1)}
+@keyframes rise{from{transform:scaleY(.04)}}
+.band{background:var(--signal);color:#000;font-size:clamp(14px,1.55vw,20px);font-weight:800;line-height:1.2;text-transform:uppercase;padding:16px 20px}
+.for{font-size:13px;line-height:1.6;color:var(--mute);padding:0 2px;max-width:60ch}
+.for strong{color:var(--chalk);font-weight:600}
+
+.portrait{flex:0 1 360px;min-width:240px;min-height:340px;position:relative;border:1px solid var(--chalk);overflow:hidden;cursor:crosshair}
+.portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 20%;display:block;filter:grayscale(1) contrast(1.15)}
+.portrait canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;mix-blend-mode:screen;opacity:.35}
+
+.intro{flex:1 1 320px;min-width:0;border:1px solid var(--chalk);display:flex;flex-direction:column;justify-content:space-between;gap:32px;padding:24px}
+.intro .lead{font-size:clamp(16px,1.45vw,19px);font-weight:400;line-height:1.6}
+.intro h2{font-size:13px;font-weight:700;margin-bottom:6px}
+.intro li{padding:10px 0;border-top:1px solid var(--grit);font-size:13px;line-height:1.5}
+.intro li strong{display:block;font-weight:600}
+.intro li span{color:var(--mute)}
+
+.city{flex:2 1 480px;min-width:0;border:1px solid var(--chalk);display:flex;flex-direction:column}
+.city-stage{position:relative;flex:1 1 auto;aspect-ratio:16/10;min-height:320px}
+.city-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:crosshair;touch-action:manipulation}
+.city figcaption{border-top:1px solid var(--chalk);padding:16px 20px 20px;display:grid;gap:16px}
+.city figcaption p{font-size:13px;line-height:1.6;color:var(--mute);max-width:62ch}
+.city-row{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 24px}
+.readouts{display:flex;flex-wrap:wrap;gap:8px 32px}
+.readouts div{display:flex;flex-direction:column}
+.readouts span{font-size:12px;color:var(--mute)}
+.readouts output{font:34px/1.05 var(--display);color:var(--chalk)}
+.readouts output.hit{color:var(--signal)}
+.city-btns{display:flex;flex-wrap:wrap;gap:10px}
+
+/* metro line */
+.line{display:grid;grid-template-columns:auto minmax(0,1fr);gap:0 20px;align-items:start}
+.line .badge{width:40px;height:40px;display:grid;place-items:center;background:var(--signal);color:#000;font:20px var(--display)}
+.stations{position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr))}
+.stations::before{content:"";position:absolute;left:-20px;right:0;top:17px;height:6px;background:var(--signal)}
+.stations button{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:9px 4px 6px;background:none;border:0;cursor:pointer;font-size:12px;font-weight:500;line-height:1.3;text-align:center}
+.stations .dot{width:22px;height:22px;border-radius:50%;background:var(--ink);border:3px solid var(--chalk);transition:all .2s}
+.stations button[aria-pressed=true]{color:var(--signal)}
+.stations button[aria-pressed=true] .dot{background:var(--signal);border-color:var(--ink);box-shadow:0 0 0 3px var(--signal)}
+.line-status{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 20px;margin:16px 0 32px clamp(0px,5vw,60px);font-size:13px;color:var(--mute)}
+.line-status #route{color:var(--chalk)}
+.line-status button{background:none;border:0;padding:0;cursor:pointer;font-size:13px;text-decoration:underline;text-underline-offset:3px}
+.line-status button:hover{color:var(--signal)}
+
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.card{position:relative;border:1px solid var(--chalk);display:flex;flex-direction:column;opacity:1;transition:opacity .25s ease,border-color .2s,transform .2s}
+.card.link:hover{border-color:var(--signal);transform:translateY(-3px)}
+.card svg{display:block;width:100%;height:auto;padding:18px 18px 14px;border-bottom:1px solid var(--chalk);color:var(--chalk)}
+.card-body{flex:1;display:flex;flex-direction:column;gap:10px;padding:18px 20px 20px}
+.card-body .chip{align-self:flex-start}
+.card h3{margin:2px 0 0;font-size:19px;font-weight:600;line-height:1.25}
+.card h3 a{text-decoration:none}
+.card.link h3 a::after{content:"";position:absolute;inset:0}
+.card .desc{font-size:14px;line-height:1.65}
+.card .meta{font-size:12px;color:var(--mute);line-height:1.5}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:8px}
+.chips button{position:relative;z-index:1;display:inline-flex;align-items:center;gap:6px;cursor:pointer;background:none;border:1px solid var(--grit);padding:4px 8px 4px 6px;font-size:11px;font-weight:400;line-height:1.2}
+.chips button:hover{border-color:var(--chalk)}
+.chips button[aria-pressed=true]{border-color:var(--signal);color:var(--signal)}
+.chips i{width:8px;height:8px;border-radius:50%;border:2px solid var(--chalk);background:transparent}
+.chips button[aria-pressed=true] i{border-color:var(--signal);background:var(--signal)}
+.card .open{font-size:12px;color:var(--mute)}
+
+.also-title{display:inline-block;margin:56px 0 0;padding:12px 18px;background:var(--signal);color:#000;font-size:clamp(14px,1.5vw,18px);font-weight:800;line-height:1.2;text-transform:uppercase}
+.also{border-top:1px solid var(--chalk)}
+.row{position:relative;display:flex;flex-wrap:wrap;gap:8px 24px;align-items:baseline;padding:18px 0;border-bottom:1px solid var(--grit);transition:opacity .25s ease}
+.row h4{flex:1 1 220px;font-size:16px;font-weight:600;line-height:1.3}
+.row h4 a{text-decoration:none}
+.row.link:hover{color:var(--signal)}
+.row.link h4 a::after{content:"";position:absolute;inset:0}
+.row p{flex:3 1 320px;font-size:14px;line-height:1.6;color:var(--chalk)}
+
+/* fit */
+.fit{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:32px}
+.fit > div{border:1px solid var(--chalk);padding:22px;display:flex;flex-direction:column;gap:12px}
+.fit h3{font-size:17px;font-weight:600;line-height:1.3}
+.fit p{font-size:14px;line-height:1.65}
+.fit ul{margin-top:auto;display:flex;flex-wrap:wrap;gap:6px;padding-top:6px}
+.fit a{display:inline-block;border:1px solid var(--signal);color:var(--signal);font-size:12px;padding:6px 10px;text-decoration:none}
+.fit a:hover{background:var(--signal);color:#000}
+.ask{margin-top:16px;border:1px solid var(--signal);padding:22px;display:grid;gap:8px;max-width:62em}
+.ask b{font-size:12px;font-weight:700;color:var(--signal);text-transform:uppercase}
+.ask p{font-size:16px;line-height:1.7;font-weight:400}
+
+/* notes */
+.notes{display:flex;flex-wrap:wrap;gap:16px 40px;align-items:start}
+.notes h2{flex:1 1 320px}
+.notes-body{flex:1 1 420px;min-width:0;display:grid;gap:18px;padding-top:8px;max-width:38em}
+.notes-body p{font-size:16px;line-height:1.75}
+.toolkit{margin-top:10px;border:1px solid var(--chalk)}
+.toolkit h3{padding:10px 14px;border-bottom:1px solid var(--chalk);font-size:13px;font-weight:700;display:flex;justify-content:space-between;gap:12px}
+.toolkit h3 span+span{color:var(--mute);font-weight:400}
+.tool{border-top:1px solid var(--grit)}
+.tool:first-of-type{border-top:0}
+.tool > button{width:100%;display:grid;grid-template-columns:minmax(120px,max-content) minmax(0,1fr) auto;gap:0 14px;align-items:baseline;padding:10px 14px;background:transparent;border:0;text-align:left;cursor:pointer;font-size:13px;line-height:1.5;transition:background .2s}
+.tool > button:hover{background:var(--panel)}
+.tool > button b{font-weight:600}
+.tool > button em{font-style:normal;color:var(--mute)}
+.tool > button strong{font:18px var(--display)}
+.tool[data-open=true] > button{background:var(--panel);color:var(--signal)}
+.tool-items{display:none;flex-wrap:wrap;gap:8px;padding:4px 14px 14px}
+.tool[data-open=true] .tool-items{display:flex}
+.tool-items a{border:1px solid var(--signal);color:var(--signal);padding:6px 10px;font-size:12px;text-decoration:none}
+.tool-items a:hover{background:var(--signal);color:#000}
+
+/* footer */
+footer{margin-top:clamp(80px,11vw,150px);padding-bottom:40px;scroll-margin-top:64px}
+.foot{padding-top:32px;border-top:1px solid var(--chalk)}
+.end{margin-bottom:32px;font-size:clamp(3.6rem,12vw,11rem)}
+.contacts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px}
+.contacts a{display:flex;flex-direction:column;justify-content:center;gap:2px;min-height:72px;padding:14px 18px;border:1px solid var(--chalk);text-decoration:none;font-size:15px;font-weight:500;line-height:1.3}
+.contacts a:hover{background:var(--signal);border-color:var(--signal);color:#000}
+.contacts small{font-size:11px;font-weight:400;opacity:.7;overflow-wrap:anywhere}
+.fine{font-size:12px;color:var(--mute)}
+
+@media (max-width:560px){
+  #clock{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .name .ch{animation:none}
+  .card,.row{transition:none}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="wrap">
+    <a class="mark" href="#top" aria-label="Back to top">MB</a>
+    <nav aria-label="Main">
+      <a href="#work">Work</a>
+      <a href="#fit">CREST CSS</a>
+      <a href="#about">About</a>
+      <a href="cv.pdf">CV</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <span id="clock">Istanbul</span>
+  </div>
+</header>
+
+<main class="wrap" id="top">
+
+  <!-- ===== HERO ===== -->
+  <section class="hero" aria-label="Introduction">
+    <div class="hero-left">
+      <h1 class="name" id="name" aria-label="Mehmet Bağdınlı" lang="tr">
+        <span class="part first" aria-hidden="true"></span>
+        <span class="part last" aria-hidden="true"></span>
+      </h1>
+      <p class="band">Computational social scientist in Istanbul</p>
+      <p class="for">Prepared for <strong>CREST CSS</strong> (sociology and computational social science at CREST, Institut Polytechnique de Paris). PhD application, entry autumn 2027.</p>
+    </div>
+
+    <figure class="portrait">
+      <img src="portrait.jpg" alt="Portrait of Mehmet Bağdınlı">
+      <canvas id="portrait" aria-hidden="true"></canvas>
+    </figure>
+
+    <div class="intro">
+      <p class="lead">I study systems that fail unevenly. Mostly cities: who gains from a new park, who can reach a hospital, whose streets are cut off when the ground shakes. Lately I also ask how the state talks about what it builds.</p>
+      <div>
+        <h2>Where I am</h2>
+        <ul>
+          <li><strong>MA in Computational Social Sciences</strong><span>Koç University · expected June 2027</span></li>
+          <li><strong>Research assistant</strong><span>İstanbul Bilgi University · since March 2026</span></li>
+          <li><strong>BA in Economics</strong><span>Galatasaray University · 2025</span></li>
+          <li><strong>Licence in Economics</strong><span>Paris 1 Panthéon-Sorbonne · dual degree, with an Erasmus+ semester in Lille</span></li>
+          <li><strong>Languages</strong><span>Turkish (native) · English, French (fluent)</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <figure class="city">
+      <div class="city-stage">
+        <canvas id="city" role="img" aria-label="Interactive diagram of a toy street network split by a strait and joined by three bridges. Shaking it breaks nearby streets and can cut parts of the city off."></canvas>
+      </div>
+      <figcaption>
+        <p>A toy city split by a strait and joined by three bridges. Click or tap anywhere on it to set off an earthquake there. <span class="sig">Yellow lines</span> are bridges, <span class="sig">yellow dots</span> are intersections cut off from the rest of the city. It is a drawing, not data.</p>
+        <div class="city-row">
+          <div class="readouts" aria-live="polite">
+            <div><span>Largest connected area</span><output id="lcc">100%</output></div>
+            <div><span>Bridges standing</span><output id="bridges">3 of 3</output></div>
+          </div>
+          <div class="city-btns">
+            <button type="button" class="btn primary" id="shake">Shake a random spot</button>
+            <button type="button" class="btn" id="rebuild">Rebuild the city</button>
+          </div>
+        </div>
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- ===== WORK ===== -->
+  <section id="work" class="block" aria-labelledby="work-title">
+    <h2 class="display" id="work-title" aria-label="Current work" style="margin-bottom:32px">
+      <span class="y" aria-hidden="true">Current</span>
+      <span class="o" aria-hidden="true">work</span>
+    </h2>
+
+    <div class="line">
+      <span class="badge" aria-hidden="true">R1</span>
+      <ul class="stations" id="stations" aria-label="Research interests"></ul>
+    </div>
+    <div class="line-status">
+      <p>Pick a station to see the work that stops there.</p>
+      <p id="route" aria-live="polite"></p>
+      <button type="button" id="reset" hidden>Show all projects</button>
+    </div>
+
+    <ul class="cards" id="cards"></ul>
+
+    <h3 class="also-title">Also on the line</h3>
+    <ul class="also" id="also"></ul>
+  </section>
+
+  <!-- ===== FIT ===== -->
+  <section id="fit" class="block" aria-labelledby="fit-title">
+    <h2 class="display" id="fit-title" aria-label="Fit with CREST CSS">
+      <span class="y" aria-hidden="true">Fit with</span>
+      <span class="o" aria-hidden="true">CREST CSS</span>
+    </h2>
+    <div class="fit" id="fit-grid"></div>
+    <div class="ask">
+      <b>The question I would bring</b>
+      <p>How are infrastructure projects presented politically, and what happens in the neighbourhoods around them? I want to trace the first with text analysis at scale and link it to the second with spatial and causal designs.</p>
+    </div>
+  </section>
+
+  <!-- ===== ABOUT ===== -->
+  <section id="about" class="block notes" aria-labelledby="about-title">
+    <h2 class="display" id="about-title" aria-label="Notes from me">
+      <span class="o" aria-hidden="true">Notes</span>
+      <span class="y" aria-hidden="true">from me</span>
+    </h2>
+    <div class="notes-body">
+      <p>This site is set up like a small magazine. Each project is a stop on one line, and the issue number goes up when the work moves on.</p>
+      <p>My questions come from political economy and urban studies, and I read them through social theory as much as through data. The methods change with the question. The question mostly doesn't: when a shock arrives, whether a crisis, an earthquake, or a new park, who absorbs it?</p>
+      <div class="toolkit">
+        <h3><span>What I work with</span><span>tap a method to see where it's used</span></h3>
+        <div id="toolkit"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="foot">
+      <h2 class="display end" aria-label="End of line">
+        <span class="y" aria-hidden="true">End of</span>
+        <span class="o" aria-hidden="true">line</span>
+      </h2>
+      <ul class="contacts">
+        <li><a href="mailto:mbagdinli25@ku.edu.tr">Email<small>mbagdinli25@ku.edu.tr</small></a></li>
+        <li><a href="cv.pdf">CV<small>PDF</small></a></li>
+        <li><a href="https://www.linkedin.com/in/mehmetbagdinli" target="_blank" rel="noopener">LinkedIn<small>mehmetbagdinli</small></a></li>
+        <li><a href="https://github.com/mbagdinli25-blip" target="_blank" rel="noopener">GitHub<small>mbagdinli25-blip</small></a></li>
+      </ul>
+      <p class="fine">Issue 2. Set in Anton and Unbounded. Made in Istanbul, last updated November 2026.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+(() => {
+'use strict';
+
+/* =========================================================
+   CONTENT. Edit text and links here.
+   href '' = card is not clickable.
+   ========================================================= */
+const STATIONS = [
+  ['inequality','Inequality'], ['urban','Urban space'], ['networks','Networks'],
+  ['politics','Politics'], ['text','Text as data'], ['causal','Causal inference'],
+];
+const LABEL = Object.fromEntries(STATIONS);
+
+const PROJECTS = [
+  { id:'green', tier:'main', status:"Master's thesis", title:'Green to whom?',
+    desc:"Do the green gains of Istanbul's Nation's Gardens (Millet Bahçeleri) reach the neighbourhoods around them, or does the marketed greenness mostly show up as captured value? A synthetic difference-in-differences design.",
+    meta:'Advisors: Merih Angın, Akın Ünver · analysis stage',
+    stops:['inequality','urban','causal'], href:'https://mbagdinli25-blip.github.io/ds4sdg/', open:'Project page ↗' },
+  { id:'shake', tier:'main', status:'Draft in preparation', title:'When the ground shakes',
+    desc:"Layered seismic vulnerability of Istanbul's road network under an Mw 7.5 scenario: network fragility, expected loss and socio-demographic vulnerability in four districts.",
+    meta:'With Saliha Nur Gökçe',
+    stops:['urban','networks'], href:'https://saliha-nur-gokce.github.io/portfolio/seismic-vulnerability.html', open:'Project page ↗' },
+  { id:'rhetoric', tier:'main', status:'Preprint', title:'Discourse after the earthquake',
+    desc:'Computational text analysis of official Turkish discourse after the 2023 Kahramanmaraş earthquakes, compared across two electoral cycles.',
+    meta:'2,139 documents · TF-IDF/LinearSVR and DistilBERTurk classifiers · revision in preparation',
+    stops:['politics','text'], href:'https://zenodo.org/records/20669836', open:'Preprint ↗' },
+  { id:'care', tier:'main', status:'Early stage', title:'The long way to care',
+    desc:"Spatial accessibility of Istanbul's city hospitals, and who is left outside the map of places they can reach.",
+    meta:'Working title: Spatial Justice and the Right to the City',
+    stops:['inequality','urban','networks'], href:'https://talipakcelik.com/sehir_hasteneleri/', open:'Project page ↗' },
+  { id:'crisis', tier:'main', status:'Analysis stage', title:'After the crisis',
+    desc:'Religiosity, economic insecurity and attitudes toward unions in Türkiye after the 2021 currency shock, from a regional analysis of Twitter data.',
+    meta:'', stops:['politics','inequality','text'], href:'', open:'' },
+
+  { id:'play', tier:'also', status:'Proposal in preparation', title:'Who gets to play?',
+    desc:"TÜBİTAK 3005 proposal on children's access to movement under deep poverty in Istanbul neighbourhoods. PI: İlknur Hacısoftaoğlu. I work on the computational component.",
+    stops:['inequality','urban'], href:'' },
+  { id:'horizon', tier:'also', status:'Proposal in preparation', title:'ENWIGI-RELATE',
+    desc:'Horizon Europe consortium proposal on neighbourhood experiences, health and unwanted loneliness. Team member in Work Package 4, İstanbul Bilgi University team led by Yelda Yücel.',
+    stops:['inequality','urban'], href:'' },
+  { id:'food', tier:'also', status:'Collective', title:'Gıda Adaleti Kolektifi',
+    desc:'A student food justice collective I helped organize, grown out of the academic work of Assoc. Prof. Cemil Yıldızcan, from mapping work to the website at gidaadaleti.com.',
+    stops:['inequality','urban'], href:'https://gidaadaleti.com' },
+  { id:'idol', tier:'also', status:'Study', title:'Idol House',
+    desc:'A study of roughly 160,000 YouTube comments on a Turkish boyband reality show.',
+    stops:['text'], href:'' },
+];
+
+const FIT = [
+  { title:'Urban sociology and inequality',
+    text:'Who gains from public investment in a neighbourhood, and who can reach the services it pays for.',
+    ids:['green','care','play'] },
+  { title:'Politics and discourse',
+    text:'How the state talks about what it builds, measured at scale in Turkish official text.',
+    ids:['rhetoric','crisis'] },
+  { title:'Computational and causal methods',
+    text:'Text classifiers, network analysis on spatial data, and difference-in-differences designs. SICSS Istanbul, July 2026.',
+    ids:['green','shake','rhetoric'] },
+];
+
+const TOOLKIT = [
+  ['Causal inference','Panel data, synthetic difference-in-differences',['causal']],
+  ['Networks','Road network vulnerability, transit accessibility',['networks']],
+  ['Text as data','Transformer classifiers, TF-IDF, topic models',['text']],
+  ['Theory','Harvey, Lefebvre, Bourdieu',['inequality','politics']],
+  ['Tools','Python, R, Stata',STATIONS.map(s => s[0])],
+];
+
+/* small glyph drawings for the cards (inside a 320x140 box) */
+const GLYPH = {
+  green:`<circle fill="#ffcf3a" stroke="none" cx="70" cy="70" r="14"/><circle cx="70" cy="70" r="28"/><circle cx="70" cy="70" r="42"/><circle cx="70" cy="70" r="56" stroke-dasharray="3 4"/><path d="M144 126H308"/><rect stroke="#ffcf3a" x="150" y="22" width="12" height="104"/><rect x="169" y="38" width="12" height="88"/><rect x="188" y="52" width="12" height="74"/><rect x="207" y="64" width="12" height="62"/><rect x="226" y="72" width="12" height="54"/><rect x="245" y="78" width="12" height="48"/><rect x="264" y="82" width="12" height="44"/><rect x="283" y="84" width="12" height="42"/>`,
+  shake:`<path d="M24 30L84 22M84 22L144 32M144 32L204 24M204 24L264 34M264 34L304 26M34 76L90 70M262 82L300 70M22 116L80 122M80 122L140 114M200 124L258 116M258 116L306 120M24 30L34 76M84 22L90 70M204 24L210 72M264 34L262 82M304 26L300 70M34 76L22 116M90 70L80 122M262 82L258 116M300 70L306 120"/><path stroke="#ffcf3a" stroke-dasharray="3 3" d="M90 70L150 80M150 80L210 72M210 72L262 82M140 114L200 124M150 80L140 114M210 72L200 124"/><circle stroke="#ffcf3a" cx="176" cy="100" r="9"/><circle stroke="#ffcf3a" cx="176" cy="100" r="21" stroke-dasharray="2 4"/><circle stroke="#ffcf3a" cx="176" cy="100" r="34" stroke-dasharray="2 6"/><path stroke="#ffcf3a" stroke-width="1.6" d="M172 96L180 104M180 96L172 104"/><g fill="#e9e7e2" stroke="none"><circle cx="24" cy="30" r="2.2"/><circle cx="84" cy="22" r="2.2"/><circle cx="144" cy="32" r="2.2"/><circle cx="204" cy="24" r="2.2"/><circle cx="264" cy="34" r="2.2"/><circle cx="304" cy="26" r="2.2"/><circle cx="34" cy="76" r="2.2"/><circle cx="90" cy="70" r="2.2"/><circle cx="210" cy="72" r="2.2"/><circle cx="262" cy="82" r="2.2"/><circle cx="300" cy="70" r="2.2"/><circle cx="22" cy="116" r="2.2"/><circle cx="80" cy="122" r="2.2"/><circle cx="140" cy="114" r="2.2"/><circle cx="200" cy="124" r="2.2"/><circle cx="258" cy="116" r="2.2"/><circle cx="306" cy="120" r="2.2"/></g><circle fill="#ffcf3a" stroke="none" cx="150" cy="80" r="3.6"/>`,
+  rhetoric:`<rect x="20" y="14" width="48" height="8"/><rect x="74" y="14" width="64" height="8"/><rect x="144" y="14" width="40" height="8"/><rect x="190" y="14" width="76" height="8"/><rect x="272" y="14" width="28" height="8"/><rect x="20" y="34" width="30" height="8"/><rect fill="#ffcf3a" stroke="none" x="56" y="34" width="82" height="8"/><rect x="144" y="34" width="56" height="8"/><rect x="206" y="34" width="58" height="8"/><rect x="270" y="34" width="30" height="8"/><rect x="20" y="54" width="70" height="8"/><rect x="96" y="54" width="40" height="8"/><rect x="142" y="54" width="62" height="8"/><rect fill="#ffcf3a" stroke="none" x="210" y="54" width="90" height="8"/><rect x="20" y="74" width="44" height="8"/><rect x="70" y="74" width="56" height="8"/><rect fill="#ffcf3a" stroke="none" x="132" y="74" width="34" height="8"/><rect x="172" y="74" width="84" height="8"/><rect x="262" y="74" width="38" height="8"/><rect x="20" y="94" width="88" height="8"/><rect x="114" y="94" width="48" height="8"/><rect x="168" y="94" width="60" height="8"/><rect x="234" y="94" width="66" height="8"/><rect x="20" y="114" width="36" height="8"/><rect fill="#ffcf3a" stroke="none" x="62" y="114" width="70" height="8"/><rect x="138" y="114" width="50" height="8"/><rect x="194" y="114" width="42" height="8"/><rect x="242" y="114" width="58" height="8"/>`,
+  care:`<path stroke-linejoin="round" d="M246 70L243.6 85.4L227.2 90L211.6 93.4L202.8 81.3L190.1 70L200 56.9L211.3 46L227.1 50.4L241.5 56Z"/><path stroke-linejoin="round" d="M266 70L261.7 97.2L232.7 105.4L205.1 111.4L189.6 90L167.1 70L184.6 46.8L204.6 27.5L232.6 35.3L258 45.2Z"/><path stroke-linejoin="round" stroke-dasharray="3 4" d="M284 70L278.1 107.9L237.7 119.2L199.3 127.6L177.7 97.8L146.4 70L170.8 37.8L198.6 10.9L237.5 21.8L272.9 35.5Z"/><rect fill="#ffcf3a" stroke="none" x="216" y="58" width="8" height="24"/><rect fill="#ffcf3a" stroke="none" x="208" y="66" width="24" height="8"/><path stroke-width="3" d="M12 30H72L108 58H134"/><circle cx="12" cy="30" r="4" fill="#000"/><circle cx="42" cy="30" r="4" fill="#000"/><circle cx="72" cy="30" r="4" fill="#000"/><circle cx="108" cy="58" r="4" fill="#000"/><circle cx="134" cy="58" r="4" fill="#000"/><rect x="20" y="96" width="7" height="7"/><rect x="36" y="108" width="7" height="7"/><rect x="24" y="120" width="7" height="7"/><rect x="50" y="118" width="7" height="7"/><rect x="62" y="100" width="7" height="7"/><rect x="44" y="88" width="7" height="7"/><rect x="78" y="116" width="7" height="7"/>`,
+  crisis:`<path d="M16 128H306"/><path d="M24 122h6v6h-6zM36 119h6v9h-6zM48 123h6v5h-6zM60 120h6v8h-6zM72 121h6v7h-6zM84 122h6v6h-6zM96 119h6v9h-6zM108 121h6v7h-6zM120 120h6v8h-6zM132 122h6v6h-6zM144 121h6v7h-6zM156 102h6v26h-6zM168 106h6v22h-6zM180 109h6v19h-6zM192 112h6v16h-6zM204 115h6v13h-6zM216 113h6v15h-6zM228 116h6v12h-6zM240 114h6v14h-6zM252 117h6v11h-6zM264 116h6v12h-6zM276 118h6v10h-6zM288 117h6v11h-6zM300 119h6v9h-6z"/><path stroke-width="1.5" stroke-linejoin="round" d="M20 58L34 62L48 56L62 60L76 57L90 61L104 55L118 59L132 56L146 58L156 44L166 80L178 50L190 86L202 62L214 92L228 58L240 84L254 66L268 88L282 60L296 78L306 70"/><path stroke="#ffcf3a" stroke-dasharray="3 4" d="M151 12V128"/><text x="157" y="22" fill="#ffcf3a" stroke="none" style="font-family:Unbounded,sans-serif;font-size:11px;font-weight:600">2021</text>`,
+};
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+const $ = (s, r = document) => r.querySelector(s);
+const el = (tag, attrs = {}, ...kids) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v === false || v == null) continue;
+    if (k === 'class') n.className = v;
+    else if (k === 'html') n.innerHTML = v;
+    else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k, v === true ? '' : v);
+  }
+  kids.flat().filter(c => c != null && c !== false).forEach(c => n.append(c));
+  return n;
+};
+const ext = { target:'_blank', rel:'noopener' };
+
+/* =========================================================
+   CLOCK
+   ========================================================= */
+const fmt = new Intl.DateTimeFormat('en-GB', { timeZone:'Europe/Istanbul', hour:'2-digit', minute:'2-digit' });
+const tick = () => { $('#clock').textContent = 'Istanbul, ' + fmt.format(new Date()); };
+tick(); setInterval(tick, 20000);
+
+/* =========================================================
+   NAME (letters rise in, then lean toward the pointer)
+   ========================================================= */
+const nameEl = $('#name');
+const letters = (host, text, d0) => [...text].forEach((c, i) => {
+  host.append(el('span', { class:'ch', style:`animation-delay:${i * 55 + d0}ms` }, c));
+});
+letters($('.first', nameEl), 'mehmet', 0);
+letters($('.last', nameEl), 'bağdınlı', 260);
+let nameRaf = 0;
+nameEl.addEventListener('pointermove', e => {
+  if (nameRaf) return;
+  nameRaf = requestAnimationFrame(() => {
+    nameRaf = 0;
+    nameEl.querySelectorAll('.ch').forEach(s => {
+      const r = s.getBoundingClientRect();
+      const dx = (e.clientX - (r.left + r.width / 2)) / Math.max(60, r.width * 1.4);
+      s.style.transform = `scaleY(${1 + 0.26 * Math.exp(-dx * dx)})`;
+    });
+  });
+});
+nameEl.addEventListener('pointerleave', () => nameEl.querySelectorAll('.ch').forEach(s => { s.style.transform = ''; }));
+
+/* =========================================================
+   PORTRAIT DOTS
+   ========================================================= */
+(() => {
+  const cv = $('#portrait'), c = cv.getContext('2d');
+  let W = 0, H = 0, dots = [], ptr = { x:-999, y:-999 }, running = false;
+  const draw = () => {
+    c.clearRect(0, 0, W, H); let moving = false;
+    for (const p of dots) {
+      const dx = p.ox - ptr.x, dy = p.oy - ptr.y, dist = Math.hypot(dx, dy) || 1;
+      const push = dist < 95 ? (95 - dist) / 95 * 16 : 0;
+      const tx = p.ox + dx / dist * push, ty = p.oy + dy / dist * push;
+      p.x += (tx - p.x) * .16; p.y += (ty - p.y) * .16;
+      if (Math.abs(tx - p.x) > .05 || Math.abs(ty - p.y) > .05) moving = true;
+      c.fillStyle = push > 0 ? '#ffcf3a' : '#2a2926';
+      c.beginPath(); c.arc(p.x, p.y, push > 0 ? 1.8 : 1.5, 0, 7); c.fill();
+    }
+    if (moving) requestAnimationFrame(draw); else running = false;
+  };
+  const kick = () => { if (!running) { running = true; requestAnimationFrame(draw); } };
+  const build = () => {
+    const r = cv.getBoundingClientRect(); W = r.width; H = r.height; if (!W || !H) return;
+    const d = Math.min(devicePixelRatio || 1, 2); cv.width = W * d; cv.height = H * d; c.setTransform(d, 0, 0, d, 0, 0);
+    dots = []; for (let y = 6; y < H; y += 11) for (let x = 6; x < W; x += 11) dots.push({ ox:x, oy:y, x, y });
+    draw();
+  };
+  cv.addEventListener('pointermove', e => { const r = cv.getBoundingClientRect(); ptr = { x:e.clientX - r.left, y:e.clientY - r.top }; kick(); });
+  cv.addEventListener('pointerleave', () => { ptr = { x:-999, y:-999 }; kick(); });
+  new ResizeObserver(build).observe(cv);
+})();
+
+/* =========================================================
+   TOY CITY: a random street network, a strait, three bridges.
+   Click to shake; streets near the epicentre can break.
+   ========================================================= */
+(() => {
+  const canvas = $('#city'), ctx = canvas.getContext('2d');
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const C = { chalk:'#e9e7e2', signal:'#ffcf3a', grit:'#4b4a47' }, WAVE = 0.75;
+  const S = { W:0, H:0, step:24, nodes:[], edges:[], ripples:[], epi:[], last:null, timer:0, running:false, until:0 };
+  const shore = y => S.W * (0.53 + 0.075 * Math.sin((y / S.H) * Math.PI * 1.7 + 0.5));
+
+  const components = (n, list) => {
+    const adj = Array.from({ length:n }, () => []);
+    list.forEach(e => { if (e.up !== false) { adj[e.a].push(e.b); adj[e.b].push(e.a); } });
+    const id = new Int32Array(n).fill(-1); let best = -1, bestSize = 0, k = 0;
+    for (let i = 0; i < n; i++) {
+      if (id[i] >= 0) continue;
+      const st = [i]; id[i] = k; let size = 0;
+      while (st.length) { const u = st.pop(); size++; for (const v of adj[u]) if (id[v] < 0) { id[v] = k; st.push(v); } }
+      if (size > bestSize) { bestSize = size; best = k; }
+      k++;
+    }
+    return { id, best, bestSize };
+  };
+  const markCut = at => {
+    S.last = components(S.nodes.length, S.edges);
+    S.nodes.forEach((p, i) => { const cut = S.last.id[i] !== S.last.best; if (cut && !p.cut) p.cutAt = at; p.cut = cut; });
+  };
+  const readout = () => {
+    const share = S.nodes.length ? Math.round(S.last.bestSize / S.nodes.length * 100) : 100;
+    const total = S.edges.filter(e => e.bridge).length, up = S.edges.filter(e => e.bridge && e.up).length;
+    const a = $('#lcc'), b = $('#bridges');
+    a.textContent = share + '%'; a.classList.toggle('hit', share < 100);
+    b.textContent = `${up} of ${total}`; b.classList.toggle('hit', up < total);
+  };
+
+  const draw = now => {
+    const { W, H, step } = S; ctx.clearRect(0, 0, W, H);
+    ctx.save(); ctx.strokeStyle = C.grit; ctx.lineWidth = 1; ctx.setLineDash([1, 5]);
+    for (const off of [-step * .55, step * .55]) {
+      ctx.beginPath();
+      for (let y = 0; y <= H + 6; y += 6) { const x = shore(y) + off; y === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+      ctx.stroke();
+    }
+    ctx.restore();
+    ctx.lineCap = 'round';
+    for (const e of S.edges) {
+      const A = S.nodes[e.a], B = S.nodes[e.b], standing = e.up || now < e.t, age = now - e.t;
+      if (standing) { ctx.setLineDash([]); ctx.strokeStyle = e.bridge ? C.signal : C.chalk; ctx.globalAlpha = e.bridge ? 1 : .85; ctx.lineWidth = e.bridge ? 2.5 : 1; }
+      else if (age < 700) { ctx.setLineDash([]); ctx.strokeStyle = C.signal; ctx.globalAlpha = 1 - (age / 700) * .8; ctx.lineWidth = 2; }
+      else { ctx.setLineDash([2, 4]); ctx.strokeStyle = C.grit; ctx.globalAlpha = 1; ctx.lineWidth = 1; }
+      ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); ctx.stroke();
+    }
+    ctx.setLineDash([]); ctx.globalAlpha = 1;
+    for (const p of S.nodes) {
+      const cut = p.cut && now >= p.cutAt;
+      ctx.fillStyle = cut ? C.signal : C.chalk; ctx.beginPath(); ctx.arc(p.x, p.y, cut ? 3 : 1.6, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.strokeStyle = C.signal; ctx.lineWidth = 1.6;
+    for (const q of S.epi) { ctx.beginPath(); ctx.moveTo(q.x - 5, q.y - 5); ctx.lineTo(q.x + 5, q.y + 5); ctx.moveTo(q.x + 5, q.y - 5); ctx.lineTo(q.x - 5, q.y + 5); ctx.stroke(); }
+    S.ripples = S.ripples.filter(w => now - w.t < 1600); ctx.lineWidth = 1.5;
+    for (const w of S.ripples) for (let k = 0; k < 3; k++) {
+      const a = now - w.t - k * 160; if (a <= 0) continue;
+      ctx.globalAlpha = Math.max(0, 1 - a / 1300); ctx.beginPath(); ctx.arc(w.x, w.y, a * WAVE, 0, Math.PI * 2); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  };
+  const run = until => {
+    S.until = Math.max(S.until, until); if (S.running) return; S.running = true;
+    const frame = now => { draw(now); if (now < S.until) requestAnimationFrame(frame); else S.running = false; };
+    requestAnimationFrame(frame);
+  };
+
+  const build = () => {
+    const r = canvas.getBoundingClientRect(); S.W = r.width; S.H = r.height; if (!S.W || !S.H) return;
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    canvas.width = Math.round(S.W * dpr); canvas.height = Math.round(S.H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const step = S.step = Math.max(24, Math.min(S.W, S.H) / 12);
+    const cols = Math.max(2, Math.floor(S.W / step)), rows = Math.max(2, Math.floor(S.H / step));
+    const ox = (S.W - (cols - 1) * step) / 2, oy = (S.H - (rows - 1) * step) / 2, water = step * .95;
+    const grid = [], pts = [];
+    for (let r2 = 0; r2 < rows; r2++) {
+      grid.push([]);
+      for (let c2 = 0; c2 < cols; c2++) {
+        const x = ox + c2 * step + (Math.random() - .5) * step * .42, y = oy + r2 * step + (Math.random() - .5) * step * .42;
+        const d = x - shore(y);
+        if (Math.abs(d) < water || Math.random() < .05) { grid[r2].push(-1); continue; }
+        grid[r2].push(pts.length); pts.push({ x, y, side:d < 0 ? 0 : 1 });
+      }
+    }
+    const links = [];
+    for (let r2 = 0; r2 < rows; r2++) for (let c2 = 0; c2 < cols; c2++) {
+      const i = grid[r2][c2]; if (i < 0) continue;
+      for (const [ra, ca, p] of [[r2, c2 + 1, .9], [r2 + 1, c2, .9], [r2 + 1, c2 + 1, .14]]) {
+        const j = grid[ra] ? grid[ra][ca] : undefined;
+        if (j === undefined || j < 0 || pts[i].side !== pts[j].side) continue;
+        if (Math.random() < p) links.push({ a:i, b:j, bridge:false });
+      }
+    }
+    const deg = new Array(pts.length).fill(0); links.forEach(e => { deg[e.a]++; deg[e.b]++; });
+    [.2, .5, .8].forEach(f => {
+      const target = S.H * f;
+      const pick = side => {
+        let best = -1, cost = Infinity;
+        pts.forEach((p, i) => { if (p.side !== side || deg[i] < 2) return; const sc = Math.abs(p.y - target) * 1.5 + Math.abs(p.x - shore(p.y)); if (sc < cost) { cost = sc; best = i; } });
+        return best;
+      };
+      const a = pick(0), b = pick(1); if (a >= 0 && b >= 0) links.push({ a, b, bridge:true });
+    });
+    const comp = components(pts.length, links), remap = new Map(); S.nodes = [];
+    pts.forEach((p, i) => { if (comp.id[i] === comp.best) { remap.set(i, S.nodes.length); S.nodes.push({ x:p.x, y:p.y, cut:false, cutAt:0 }); } });
+    S.edges = links.filter(e => remap.has(e.a) && remap.has(e.b)).map(e => ({ a:remap.get(e.a), b:remap.get(e.b), bridge:e.bridge, up:true, t:0 }));
+    S.ripples = []; S.epi = []; clearTimeout(S.timer); markCut(0); readout(); draw(performance.now());
+  };
+
+  const shake = (x, y) => {
+    if (!S.nodes.length) return;
+    const now = performance.now(), reach = Math.min(S.W, S.H) * .34; let last = now;
+    S.edges.forEach(e => {
+      if (!e.up) return;
+      const A = S.nodes[e.a], B = S.nodes[e.b], d = Math.hypot((A.x + B.x) / 2 - x, (A.y + B.y) / 2 - y);
+      const p = (e.bridge ? .8 : .6) * Math.exp(-(d * d) / (reach * reach));
+      if (Math.random() < p) { e.up = false; e.t = reduceMotion ? now - 1000 : now + d / WAVE; last = Math.max(last, e.t); }
+    });
+    S.epi.push({ x, y });
+    if (reduceMotion) { markCut(now - 1); readout(); draw(now); return; }
+    S.ripples.push({ x, y, t:now }); markCut(last + 120);
+    clearTimeout(S.timer); S.timer = setTimeout(readout, last + 120 - now);
+    run(Math.max(last + 800, now + 1500));
+  };
+
+  canvas.addEventListener('pointerdown', e => { const r = canvas.getBoundingClientRect(); shake(e.clientX - r.left, e.clientY - r.top); });
+  $('#shake').addEventListener('click', () => shake(S.W * (.15 + Math.random() * .7), S.H * (.15 + Math.random() * .7)));
+  $('#rebuild').addEventListener('click', build);
+  let sized = { w:0, h:0 }, rt = 0;
+  new ResizeObserver(() => {
+    const r = canvas.getBoundingClientRect();
+    if (Math.abs(r.width - sized.w) < 1 && Math.abs(r.height - sized.h) < 1) return;
+    sized = { w:r.width, h:r.height }; clearTimeout(rt); rt = setTimeout(build, 80);
+  }).observe(canvas);
+})();
+
+/* =========================================================
+   STATIONS + PROJECTS
+   ========================================================= */
+let station = null;
+const byId = Object.fromEntries(PROJECTS.map(p => [p.id, p]));
+
+const chips = p => el('div', { class:'chips' }, p.stops.map(k =>
+  el('button', { type:'button', 'data-station':k, 'aria-pressed':'false', onclick:() => setStation(k) }, el('i'), LABEL[k])));
+
+const titleOf = (tag, p) => el(tag, {}, p.href ? el('a', { href:p.href, ...ext }, p.title) : p.title);
+
+const cardsEl = $('#cards'), alsoEl = $('#also');
+PROJECTS.filter(p => p.tier === 'main').forEach(p => {
+  cardsEl.append(el('li', { class:'card' + (p.href ? ' link' : ''), id:'p-' + p.id, 'data-stops':p.stops.join(' ') },
+    el('div', { html:`<svg viewBox="0 0 320 140" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true">${GLYPH[p.id]}</svg>` }),
+    el('div', { class:'card-body' },
+      el('p', { class:'chip' }, p.status),
+      titleOf('h3', p),
+      el('p', { class:'desc' }, p.desc),
+      p.meta ? el('p', { class:'meta' }, p.meta) : null,
+      chips(p),
+      p.href ? el('span', { class:'open', 'aria-hidden':'true' }, p.open) : null)));
+});
+PROJECTS.filter(p => p.tier === 'also').forEach(p => {
+  alsoEl.append(el('li', { class:'row' + (p.href ? ' link' : ''), id:'p-' + p.id, 'data-stops':p.stops.join(' ') },
+    titleOf('h4', p),
+    el('p', {}, p.desc),
+    el('span', { class:'chip' }, p.status)));
+});
+
+const stationsEl = $('#stations');
+STATIONS.forEach(([k, label]) => stationsEl.append(el('li', { style:'display:flex' },
+  el('button', { type:'button', 'data-station':k, 'aria-pressed':'false', onclick:() => setStation(k) }, el('span', { class:'dot' }), el('span', {}, label)))));
+
+function setStation(k) { station = station === k ? null : k; applyFilter(); }
+function applyFilter() {
+  const hit = list => !station || list.includes(station);
+  document.querySelectorAll('[data-stops]').forEach(n => { n.style.opacity = hit(n.dataset.stops.split(' ')) ? 1 : .22; });
+  document.querySelectorAll('[data-station]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.station === station)));
+  const shown = PROJECTS.filter(p => hit(p.stops)).length;
+  $('#route').textContent = station ? `${shown} of ${PROJECTS.length} projects stop at ${LABEL[station]}.` : `All ${PROJECTS.length} projects are shown.`;
+  $('#reset').hidden = !station;
+}
+$('#reset').addEventListener('click', () => { station = null; applyFilter(); });
+applyFilter();
+
+/* =========================================================
+   FIT GRID + TOOLKIT
+   ========================================================= */
+$('#fit-grid').append(...FIT.map(f => el('div', {},
+  el('h3', {}, f.title),
+  el('p', {}, f.text),
+  el('ul', {}, f.ids.map(id => el('li', {}, el('a', { href:'#p-' + id }, byId[id].title)))))));
+
+const toolkitEl = $('#toolkit');
+TOOLKIT.forEach(([name, note, keys]) => {
+  const ids = PROJECTS.filter(p => p.stops.some(k => keys.includes(k)));
+  const wrap = el('div', { class:'tool', 'data-open':'false' });
+  const btn = el('button', { type:'button', 'aria-expanded':'false' }, el('b', {}, name), el('em', {}, note), el('strong', {}, String(ids.length)));
+  btn.addEventListener('click', () => {
+    const open = wrap.dataset.open !== 'true';
+    toolkitEl.querySelectorAll('.tool').forEach(t => { t.dataset.open = 'false'; t.firstChild.setAttribute('aria-expanded', 'false'); });
+    wrap.dataset.open = String(open); btn.setAttribute('aria-expanded', String(open));
+  });
+  wrap.append(btn, el('div', { class:'tool-items' }, ids.map(p => el('a', { href:'#p-' + p.id }, p.title + ' ↗'))));
+  toolkitEl.append(wrap);
+});
+})();
+</script>
+</body>
+</html>
