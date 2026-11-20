@@ -167,6 +167,35 @@ section{scroll-margin-top:64px}
 .tool-items a{border:1px solid var(--signal);color:var(--signal);padding:6px 10px;font-size:12px;text-decoration:none}
 .tool-items a:hover{background:var(--signal);color:#000}
 
+/* frames carousel */
+.carousel{margin-top:8px;border:1px solid var(--chalk)}
+.track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;cursor:grab;overscroll-behavior-x:contain}
+.track::-webkit-scrollbar{display:none}
+.track.dragging{scroll-snap-type:none;cursor:grabbing;user-select:none}
+.slide{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:clamp(16px,3vw,32px);padding:clamp(16px,3vw,32px);height:clamp(380px,62vh,540px)}
+.slide-text{display:flex;flex-direction:column;justify-content:center;gap:14px;min-width:0}
+.slide-text h3{font:clamp(2rem,4.2vw,3.6rem)/.95 var(--display);text-transform:uppercase;color:var(--signal)}
+.slide-text p{font-size:15px;line-height:1.7;max-width:34ch}
+.media{display:grid;gap:10px;min-height:0;grid-auto-rows:minmax(0,1fr)}
+.media.m2,.media.m3,.media.m4{grid-template-columns:1fr 1fr}
+.media.m3{grid-template-rows:minmax(0,1.2fr) minmax(0,1fr)}
+.media.m3 > :first-child{grid-column:1/-1}
+.media.m4{grid-template-rows:repeat(2,minmax(0,1fr))}
+.media > *{display:block;width:100%;height:100%;min-height:0;object-fit:cover;object-position:50% 30%;border:1px solid var(--chalk);background:var(--panel)}
+.media video{object-fit:contain;background:#000}
+.media img{-webkit-user-drag:none;user-select:none}
+.media .ph{display:grid;place-items:center;border-style:dashed;border-color:var(--grit);color:var(--mute);font-size:12px}
+.car-bar{display:flex;align-items:center;gap:12px;padding:12px clamp(16px,3vw,32px);border-top:1px solid var(--chalk)}
+.dots{display:flex;gap:8px;margin:0 auto;padding:0;list-style:none}
+.dots button{width:12px;height:12px;padding:0;border:2px solid var(--chalk);background:transparent;cursor:pointer}
+.dots button[aria-current=true]{background:var(--signal);border-color:var(--signal)}
+.car-bar output{font:22px var(--display);min-width:5.5ch;text-align:right}
+.btn:disabled{opacity:.3;cursor:default;background:transparent;color:inherit}
+@media (max-width:760px){
+  .slide{grid-template-columns:1fr;height:auto}
+  .media{height:min(62vh,400px)}
+}
+
 /* footer */
 footer{margin-top:clamp(80px,11vw,150px);padding-bottom:40px;scroll-margin-top:64px}
 .foot{padding-top:32px;border-top:1px solid var(--chalk)}
@@ -196,6 +225,7 @@ footer{margin-top:clamp(80px,11vw,150px);padding-bottom:40px;scroll-margin-top:6
       <a href="#work">Work</a>
       <a href="#fit">CREST CSS</a>
       <a href="#about">About</a>
+      <a href="#beyond">Beyond</a>
       <a href="cv.pdf">CV</a>
       <a href="#contact">Contact</a>
     </nav>
@@ -306,6 +336,25 @@ footer{margin-top:clamp(80px,11vw,150px);padding-bottom:40px;scroll-margin-top:6
       </div>
     </div>
   </section>
+
+  <!-- ===== BEYOND THE CV ===== -->
+  <section id="beyond" class="block" aria-labelledby="beyond-title">
+    <h2 class="display" id="beyond-title" aria-label="Beyond the CV">
+      <span class="y" aria-hidden="true">Beyond</span>
+      <span class="o" aria-hidden="true">the CV</span>
+    </h2>
+    <div class="carousel" role="region" aria-roledescription="carousel" aria-label="About me, in frames">
+      <div class="track" id="track" tabindex="0"></div>
+      <div class="car-bar">
+        <button type="button" class="btn" id="prev" aria-label="Previous frame">←</button>
+        <button type="button" class="btn" id="next" aria-label="Next frame">→</button>
+        <ol class="dots" id="dots"></ol>
+        <output id="count" aria-live="polite"></output>
+      </div>
+    </div>
+    <h3 class="also-title">How I got here</h3>
+    <ul class="also" id="path"></ul>
+  </section>
 </main>
 
 <footer id="contact">
@@ -320,6 +369,7 @@ footer{margin-top:clamp(80px,11vw,150px);padding-bottom:40px;scroll-margin-top:6
         <li><a href="cv.pdf">CV<small>PDF</small></a></li>
         <li><a href="https://www.linkedin.com/in/mehmetbagdinli" target="_blank" rel="noopener">LinkedIn<small>mehmetbagdinli</small></a></li>
         <li><a href="https://github.com/mbagdinli25-blip" target="_blank" rel="noopener">GitHub<small>mbagdinli25-blip</small></a></li>
+        <li><a href="https://open.spotify.com/user/mehmetbagdinli" target="_blank" rel="noopener">Spotify<small>my playlists</small></a></li>
       </ul>
       <p class="fine">Issue 2. Set in Anton and Unbounded. Made in Istanbul, last updated November 2026.</p>
     </div>
@@ -393,6 +443,56 @@ const TOOLKIT = [
   ['Text as data','Transformer classifiers, TF-IDF, topic models',['text']],
   ['Theory','Harvey, Lefebvre, Bourdieu',['inequality','politics']],
   ['Tools','Python, R, Stata',STATIONS.map(s => s[0])],
+];
+
+/* Frames, in order. Each frame has a title, an optional line of text and 1 to 4 media.
+   photo: { img:'img/file.jpg', alt:'what is in it' }
+   video: { video:'vid/file.mp4', poster:'img/file.jpg', alt:'what is in it' }
+   With 3 media the first one is shown wide. */
+const FRAMES = [
+  { title:'Want to know me a little better?',
+    text:'Swipe, drag or use the arrows to see what I do outside work.',
+    media:[ { img:'img/me.jpg', alt:'Photo of me' } ] },
+  { title:'I love to dance.',
+    media:[ { video:'vid/dance-1.mp4', poster:'img/dance-1.jpg', alt:'Dance clip 1' },
+            { video:'vid/dance-2.mp4', poster:'img/dance-2.jpg', alt:'Dance clip 2' } ] },
+  { title:'I am into physical theatre.',
+    text:'I am also a part-time clown 😎',
+    media:[ { img:'img/clown.jpg', alt:'Me as a clown' } ] },
+  { title:'I crochet.',
+    text:'A few of my motifs.',
+    media:[ { img:'img/crochet-1.jpg', alt:'Crochet motif 1' },
+            { img:'img/crochet-2.jpg', alt:'Crochet motif 2' },
+            { img:'img/crochet-3.jpg', alt:'Crochet motif 3' },
+            { img:'img/crochet-4.jpg', alt:'Crochet motif 4' } ] },
+  { title:'I love to travel.',
+    text:'I love taking my backpack and going to random places.',
+    media:[ { img:'img/travel-1.jpg', alt:'Travel photo 1', pos:'50% 72%' },
+            { img:'img/travel-2.jpg', alt:'Travel photo 2' },
+            { img:'img/travel-3.jpg', alt:'Travel photo 3' } ] },
+  { title:'I love cinema.',
+    text:'I keep video journals: small films about my own days.',
+    media:[ { video:'vid/journal.mp4', poster:'img/journal.jpg', alt:'Video journal clip' },
+            { img:'img/cinema-1.jpg', alt:'Cinema photo 1' },
+            { img:'img/cinema-2.jpg', alt:'Cinema photo 2' } ] },
+];
+
+const PATH = [
+  { title:'Economics in Istanbul, Paris and Lille',
+    text:'Dual degree between Galatasaray University and Paris 1 Panthéon-Sorbonne, with an Erasmus+ semester in Lille. I was an undergraduate research assistant at Galatasaray from 2022 to 2023.',
+    when:'BA 2025' },
+  { title:'A thesis in French',
+    text:'My undergraduate thesis asked how perceived political and economic risk shapes migration intentions, using survey data and principal component analysis.',
+    when:'2025' },
+  { title:'Koç University',
+    text:"MA in Computational Social Sciences. My thesis, Green to whom?, asks who captures the value around Istanbul's Nation's Gardens.",
+    when:'Expected June 2027' },
+  { title:'İstanbul Bilgi University',
+    text:'Research assistant, with weekly problem sessions in econometrics and statistics.',
+    when:'Since March 2026' },
+  { title:'SICSS Istanbul',
+    text:'Two weeks on computational social science methods, including automated annotation and evaluating language models.',
+    when:'July 2026' },
 ];
 
 /* small glyph drawings for the cards (inside a 320x140 box) */
@@ -692,6 +792,78 @@ TOOLKIT.forEach(([name, note, keys]) => {
   wrap.append(btn, el('div', { class:'tool-items' }, ids.map(p => el('a', { href:'#p-' + p.id }, p.title + ' ↗'))));
   toolkitEl.append(wrap);
 });
+
+/* =========================================================
+   BEYOND THE CV
+   ========================================================= */
+(() => {
+  const track = $('#track'), dots = $('#dots'), count = $('#count');
+  const prevBtn = $('#prev'), nextBtn = $('#next');
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const pad = n => String(n).padStart(2, '0');
+  let idx = 0;
+
+  FRAMES.forEach((f, i) => {
+    const media = f.media.map(m => {
+      const node = m.video
+        ? el('video', { src:m.video, poster:m.poster, controls:true, preload:'none', playsinline:true, 'aria-label':m.alt })
+        : el('img', { src:m.img, alt:m.alt, loading:'lazy', draggable:'false', style:m.pos ? 'object-position:' + m.pos : null });
+      node.addEventListener('error', () => node.replaceWith(el('div', { class:'ph' }, m.video ? 'video coming' : 'photo coming')));
+      return node;
+    });
+    track.append(el('section', { class:'slide', role:'group', 'aria-roledescription':'slide', 'aria-label':`${i + 1} of ${FRAMES.length}` },
+      el('div', { class:'slide-text' }, el('h3', {}, f.title), f.text ? el('p', {}, f.text) : null),
+      el('div', { class:'media m' + media.length }, media)));
+    dots.append(el('li', {}, el('button', { type:'button', 'aria-label':'Go to frame ' + (i + 1), onclick:() => go(i) })));
+  });
+
+  function go(i) {
+    i = Math.max(0, Math.min(FRAMES.length - 1, i));
+    track.scrollTo({ left:i * track.clientWidth, behavior:calm ? 'auto' : 'smooth' });
+  }
+  function show(i) {
+    idx = i;
+    count.textContent = `${pad(i + 1)} / ${pad(FRAMES.length)}`;
+    prevBtn.disabled = i === 0; nextBtn.disabled = i === FRAMES.length - 1;
+    dots.querySelectorAll('button').forEach((b, k) => b.setAttribute('aria-current', String(k === i)));
+    track.querySelectorAll('video').forEach(v => v.pause());
+  }
+
+  let raf = 0;
+  track.addEventListener('scroll', () => {
+    if (raf) return;
+    raf = requestAnimationFrame(() => { raf = 0; const i = Math.round(track.scrollLeft / track.clientWidth); if (i !== idx) show(i); });
+  });
+  prevBtn.addEventListener('click', () => go(idx - 1));
+  nextBtn.addEventListener('click', () => go(idx + 1));
+  track.addEventListener('keydown', e => {
+    if (e.target !== track) return;
+    if (e.key === 'ArrowRight') { e.preventDefault(); go(idx + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); go(idx - 1); }
+  });
+
+  /* mouse drag (touch screens already swipe natively) */
+  let drag = null;
+  track.addEventListener('pointerdown', e => {
+    if (e.pointerType !== 'mouse' || e.button !== 0 || e.target.closest('video, button')) return;
+    drag = { x:e.clientX, left:track.scrollLeft };
+    track.classList.add('dragging'); track.setPointerCapture(e.pointerId);
+  });
+  track.addEventListener('pointermove', e => { if (drag) track.scrollLeft = drag.left - (e.clientX - drag.x); });
+  const endDrag = e => {
+    if (!drag) return;
+    const dx = e.clientX - drag.x, w = track.clientWidth;
+    let to = Math.round(drag.left / w);
+    if (dx < -w * .15) to += 1; else if (dx > w * .15) to -= 1;
+    drag = null; track.classList.remove('dragging'); go(to);
+  };
+  track.addEventListener('pointerup', endDrag);
+  track.addEventListener('pointercancel', endDrag);
+
+  new ResizeObserver(() => { track.scrollLeft = idx * track.clientWidth; }).observe(track);
+  show(0);
+})();
+$('#path').append(...PATH.map(s => el('li', { class:'row' }, el('h4', {}, s.title), el('p', {}, s.text), el('span', { class:'chip' }, s.when))));
 })();
 </script>
 </body>
