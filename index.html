@@ -176,13 +176,10 @@ section{scroll-margin-top:64px}
 .slide-text{display:flex;flex-direction:column;justify-content:center;gap:14px;min-width:0}
 .slide-text h3{font:clamp(2rem,4.2vw,3.6rem)/.95 var(--display);text-transform:uppercase;color:var(--signal)}
 .slide-text p{font-size:15px;line-height:1.7;max-width:34ch}
-.media{display:grid;gap:10px;min-height:0;grid-auto-rows:minmax(0,1fr)}
-.media.m2,.media.m3,.media.m4{grid-template-columns:1fr 1fr}
-.media.m3{grid-template-rows:minmax(0,1.2fr) minmax(0,1fr)}
-.media.m3 > :first-child{grid-column:1/-1}
-.media.m4{grid-template-rows:repeat(2,minmax(0,1fr))}
-.media > *{display:block;width:100%;height:100%;min-height:0;object-fit:cover;object-position:50% 30%;border:1px solid var(--chalk);background:var(--panel)}
-.media video{object-fit:contain;background:#000}
+.media{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:0;min-width:0}
+.media .row{display:flex;justify-content:center;gap:10px}
+.media .row > *{flex:none;display:block;object-fit:cover;border:1px solid var(--chalk);background:var(--panel)}
+.media .row > video{object-fit:contain;background:#000}
 .media img{-webkit-user-drag:none;user-select:none}
 .media .ph{display:grid;place-items:center;border-style:dashed;border-color:var(--grit);color:var(--mute);font-size:12px}
 .car-bar{display:flex;align-items:center;gap:12px;padding:12px clamp(16px,3vw,32px);border-top:1px solid var(--chalk)}
@@ -467,7 +464,7 @@ const FRAMES = [
             { img:'img/crochet-4.jpg', alt:'Crochet motif 4' } ] },
   { title:'I love to travel.',
     text:'I love taking my backpack and going to random places.',
-    media:[ { img:'img/travel-1.jpg', alt:'Travel photo 1', pos:'50% 72%' },
+    media:[ { img:'img/travel-1.jpg', alt:'Travel photo 1' },
             { img:'img/travel-2.jpg', alt:'Travel photo 2' },
             { img:'img/travel-3.jpg', alt:'Travel photo 3' } ] },
   { title:'I love cinema.',
@@ -801,19 +798,63 @@ TOOLKIT.forEach(([name, note, keys]) => {
   const prevBtn = $('#prev'), nextBtn = $('#next');
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const pad = n => String(n).padStart(2, '0');
+  const GAP = 10;
   let idx = 0;
 
+  /* Aspect ratio of a photo, or of a video (measured from its poster). */
+  const ratioOf = m => new Promise(done => {
+    const src = m.video ? m.poster : m.img;
+    if (!src) return done(16 / 9);
+    const im = new Image();
+    im.onload = () => done(im.naturalWidth / im.naturalHeight);
+    im.onerror = () => done(4 / 3);
+    im.src = src;
+  });
+
+  /* Lays one frame's media out in rows, whole and uncropped, as large as the box allows.
+     It tries every way of cutting the list into rows and keeps the one with the most picture area. */
+  function arrange(box, items) {
+    const W = box.clientWidth, H = box.clientHeight, n = items.length;
+    if (!W || !H || !n) return;
+    let best = null;
+    for (let mask = 0; mask < 1 << (n - 1); mask++) {
+      const rows = [[0]];
+      for (let i = 1; i < n; i++) { if ((mask >> (i - 1)) & 1) rows.push([]); rows[rows.length - 1].push(i); }
+      const sums = rows.map(r => r.reduce((s, i) => s + items[i].a, 0));
+      const hs = rows.map((r, j) => (W - GAP * (r.length - 1)) / sums[j]);
+      const k = Math.min(1, (H - GAP * (rows.length - 1)) / hs.reduce((s, h) => s + h, 0));
+      const area = sums.reduce((s, sum, j) => s + sum * (hs[j] * k) ** 2, 0);
+      if (!best || area > best.area) best = { rows, hs, k, area };
+    }
+    box.replaceChildren(...best.rows.map((r, j) => {
+      const h = best.hs[j] * best.k;
+      return el('div', { class:'row' }, r.map(i => {
+        const node = items[i].node;
+        node.style.height = h + 'px';
+        node.style.width = h * items[i].a + 'px';
+        return node;
+      }));
+    }));
+  }
+
   FRAMES.forEach((f, i) => {
-    const media = f.media.map(m => {
-      const node = m.video
+    const box = el('div', { class:'media' });
+    const items = f.media.map(m => {
+      const item = { a:4 / 3, node:null };
+      item.node = m.video
         ? el('video', { src:m.video, poster:m.poster, controls:true, preload:'none', playsinline:true, 'aria-label':m.alt })
-        : el('img', { src:m.img, alt:m.alt, loading:'lazy', draggable:'false', style:m.pos ? 'object-position:' + m.pos : null });
-      node.addEventListener('error', () => node.replaceWith(el('div', { class:'ph' }, m.video ? 'video coming' : 'photo coming')));
-      return node;
+        : el('img', { src:m.img, alt:m.alt, draggable:'false' });
+      item.node.addEventListener('error', () => {
+        item.node = el('div', { class:'ph' }, m.video ? 'video coming' : 'photo coming');
+        arrange(box, items);
+      });
+      return item;
     });
+    Promise.all(f.media.map(ratioOf)).then(rs => { rs.forEach((a, j) => { items[j].a = a; }); arrange(box, items); });
+    new ResizeObserver(() => arrange(box, items)).observe(box);
     track.append(el('section', { class:'slide', role:'group', 'aria-roledescription':'slide', 'aria-label':`${i + 1} of ${FRAMES.length}` },
       el('div', { class:'slide-text' }, el('h3', {}, f.title), f.text ? el('p', {}, f.text) : null),
-      el('div', { class:'media m' + media.length }, media)));
+      box));
     dots.append(el('li', {}, el('button', { type:'button', 'aria-label':'Go to frame ' + (i + 1), onclick:() => go(i) })));
   });
 
