@@ -172,14 +172,13 @@ section{scroll-margin-top:64px}
 .track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;cursor:grab;overscroll-behavior-x:contain}
 .track::-webkit-scrollbar{display:none}
 .track.dragging{scroll-snap-type:none;cursor:grabbing;user-select:none}
-.slide{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:clamp(16px,3vw,32px);padding:clamp(16px,3vw,32px);height:clamp(380px,62vh,540px)}
+.slide{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:clamp(16px,3vw,32px);padding:clamp(16px,3vw,32px);height:500px}
 .slide-text{display:flex;flex-direction:column;justify-content:center;gap:14px;min-width:0}
 .slide-text h3{font:clamp(2rem,4.2vw,3.6rem)/.95 var(--display);text-transform:uppercase;color:var(--signal)}
 .slide-text p{font-size:15px;line-height:1.7;max-width:34ch}
 .media{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:0;min-width:0}
-.media .row{display:flex;justify-content:center;gap:10px}
-.media .row > *{flex:none;display:block;object-fit:cover;border:1px solid var(--chalk);background:var(--panel)}
-.media .row > video{object-fit:contain;background:#000}
+.media .strip{display:flex;justify-content:center;gap:10px}
+.media .strip > *{flex:none;display:block;object-fit:contain;border:1px solid var(--chalk);background:#000}
 .media img{-webkit-user-drag:none;user-select:none}
 .media .ph{display:grid;place-items:center;border-style:dashed;border-color:var(--grit);color:var(--mute);font-size:12px}
 .car-bar{display:flex;align-items:center;gap:12px;padding:12px clamp(16px,3vw,32px);border-top:1px solid var(--chalk)}
@@ -190,7 +189,7 @@ section{scroll-margin-top:64px}
 .btn:disabled{opacity:.3;cursor:default;background:transparent;color:inherit}
 @media (max-width:760px){
   .slide{grid-template-columns:1fr;height:auto}
-  .media{height:min(62vh,400px)}
+  .media{height:400px}
 }
 
 /* footer */
@@ -811,30 +810,27 @@ TOOLKIT.forEach(([name, note, keys]) => {
     im.src = src;
   });
 
-  /* Lays one frame's media out in rows, whole and uncropped, as large as the box allows.
-     It tries every way of cutting the list into rows and keeps the one with the most picture area. */
+  /* Gives every photo in a frame the same tile, as large as the box allows. A photo is shown whole
+     inside its tile (never cropped), so a tile whose shape differs from the photo gets dark bars.
+     The tile shape is the typical shape of the frame's photos, kept between 3:5 and 8:5. */
   function arrange(box, items) {
     const W = box.clientWidth, H = box.clientHeight, n = items.length;
     if (!W || !H || !n) return;
+    const t = Math.min(1.6, Math.max(.6, Math.exp(items.reduce((s, it) => s + Math.log(it.a), 0) / n)));
     let best = null;
-    for (let mask = 0; mask < 1 << (n - 1); mask++) {
-      const rows = [[0]];
-      for (let i = 1; i < n; i++) { if ((mask >> (i - 1)) & 1) rows.push([]); rows[rows.length - 1].push(i); }
-      const sums = rows.map(r => r.reduce((s, i) => s + items[i].a, 0));
-      const hs = rows.map((r, j) => (W - GAP * (r.length - 1)) / sums[j]);
-      const k = Math.min(1, (H - GAP * (rows.length - 1)) / hs.reduce((s, h) => s + h, 0));
-      const area = sums.reduce((s, sum, j) => s + sum * (hs[j] * k) ** 2, 0);
-      if (!best || area > best.area) best = { rows, hs, k, area };
+    for (let cols = 1; cols <= n; cols++) {
+      const rows = Math.ceil(n / cols);
+      let w = (W - GAP * (cols - 1)) / cols, h = w / t;
+      const room = (H - GAP * (rows - 1)) / rows;
+      if (h > room) { h = room; w = h * t; }
+      if (!best || w * h > best.w * best.h) best = { cols, w, h };
     }
-    box.replaceChildren(...best.rows.map((r, j) => {
-      const h = best.hs[j] * best.k;
-      return el('div', { class:'row' }, r.map(i => {
-        const node = items[i].node;
-        node.style.height = h + 'px';
-        node.style.width = h * items[i].a + 'px';
-        return node;
-      }));
-    }));
+    box.replaceChildren(...Array.from({ length:Math.ceil(n / best.cols) }, (_, r) =>
+      el('div', { class:'strip' }, items.slice(r * best.cols, (r + 1) * best.cols).map(it => {
+        it.node.style.width = best.w + 'px';
+        it.node.style.height = best.h + 'px';
+        return it.node;
+      }))));
   }
 
   FRAMES.forEach((f, i) => {
